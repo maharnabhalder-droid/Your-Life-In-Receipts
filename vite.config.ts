@@ -17,4 +17,24 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom') || id.includes('react/') || id.includes('scheduler')) {
+              return 'vendor-react';
+            }
+            if (id.includes('lucide-react') || id.includes('motion') || id.includes('cmdk') || id.includes('vaul')) {
+              return 'vendor-ui';
+            }
+            if (id.includes('d3') || id.includes('@tanstack')) {
+              return 'vendor-charts';
+            }
+          }
+        },
+      },
+    },
+  },
 });

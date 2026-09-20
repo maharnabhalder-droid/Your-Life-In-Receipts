@@ -11,6 +11,7 @@ import { MessageReceipt } from '../components/receipts/MessageReceipt';
 import { SearchReceipt } from '../components/receipts/SearchReceipt';
 import { PhotoReceipt } from '../components/receipts/PhotoReceipt';
 import { NormalizedReceipt } from '../types/receipt';
+import { RotateCcw } from 'lucide-react';
 import { FilterBar } from '../components/FilterBar';
 
 export const RollView: React.FC = () => {
@@ -18,6 +19,7 @@ export const RollView: React.FC = () => {
   const computed = useReceiptStore((state) => state.computed);
   const selectedReceiptId = useReceiptStore((state) => state.selectedReceiptId);
   const openMomentDrawer = useReceiptStore((state) => state.openMomentDrawer);
+  const resetAllFilters = useReceiptStore((state) => state.resetAllFilters);
 
   const chapters = computed?.chapters || [];
 
@@ -92,9 +94,15 @@ export const RollView: React.FC = () => {
 
       <main className="flex-1 max-w-4xl w-full mx-auto p-2 md:p-6">
         {filteredReceipts.length === 0 ? (
-          <div className="text-center py-20 font-mono text-[var(--text-muted)] space-y-2">
-            <p className="text-lg">No receipts match your active filters.</p>
-            <p className="text-xs text-neutral-500">Try clearing search terms or resetting category pills.</p>
+          <div className="text-center py-20 font-mono text-[var(--text-muted)] space-y-4 max-w-md mx-auto">
+            <p className="text-lg font-serif text-[var(--text-main)] font-bold">No receipts match your active filters.</p>
+            <p className="text-xs text-[var(--text-muted)]">Try clearing your search term, mood selections, or date scrubber range.</p>
+            <button
+              onClick={resetAllFilters}
+              className="px-4 py-2 bg-amber-500 text-black font-bold text-xs rounded shadow hover:bg-amber-400 transition-all flex items-center justify-center gap-2 mx-auto cursor-pointer min-h-[44px] min-w-[44px]"
+            >
+              <RotateCcw className="w-4 h-4" /> Reset All Filters
+            </button>
           </div>
         ) : (
           <div

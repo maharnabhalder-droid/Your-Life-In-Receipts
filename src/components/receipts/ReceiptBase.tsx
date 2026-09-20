@@ -56,8 +56,17 @@ export const ReceiptBase: React.FC<ReceiptBaseProps> = ({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${receipt.type.toUpperCase()} Receipt #${receipt.id.slice(-6)}: ${receipt.title}`}
       onClick={handleClick}
-      className={`relative cursor-pointer transition-all duration-200 py-1 max-w-lg mx-auto ${
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick(e as any);
+        }
+      }}
+      className={`relative cursor-pointer transition-all duration-200 py-1 max-w-lg mx-auto focus:outline-none focus:ring-2 focus:ring-amber-500 rounded ${
         isSelected ? 'ring-2 ring-amber-400 scale-[1.02] z-20' : 'hover:scale-[1.01] hover:shadow-2xl'
       }`}
     >

@@ -69,7 +69,7 @@ export const FilterBar: React.FC = () => {
                 key={t}
                 onClick={() => toggleTypeFilter(t)}
                 aria-pressed={isActive}
-                className={`px-2 py-1 rounded border text-[11px] font-medium transition-all flex items-center gap-1 shrink-0 ${
+                className={`px-2.5 py-1.5 rounded border text-[11px] font-medium transition-all flex items-center justify-center gap-1 shrink-0 min-h-[44px] min-w-[44px] ${
                   isActive
                     ? 'bg-amber-500 text-black border-amber-400 font-bold shadow'
                     : 'bg-[var(--bg-desk)] text-[var(--text-main)] border-[var(--border-receipt)] hover:border-amber-500/50'
@@ -84,15 +84,15 @@ export const FilterBar: React.FC = () => {
           {selectedTypes.length > 0 && (
             <button
               onClick={clearTypeFilters}
-              className="text-[10px] text-red-400 hover:text-red-300 underline ml-1 flex items-center gap-0.5 shrink-0"
+              className="text-[10px] text-red-400 hover:text-red-300 underline ml-1 flex items-center justify-center gap-0.5 shrink-0 min-h-[44px] min-w-[44px]"
             >
-              <X className="w-3 h-3" /> Clear ({selectedTypes.length})
+              <X className="w-3.5 h-3.5" /> Clear ({selectedTypes.length})
             </button>
           )}
         </div>
 
         {/* Date Range Scrubber */}
-        <div className="flex items-center gap-1.5 shrink-0 bg-[var(--bg-desk)] px-2 py-1 rounded border border-[var(--border-receipt)] text-[10px] sm:text-xs">
+        <div className="flex items-center gap-1.5 shrink-0 bg-[var(--bg-desk)] px-2 py-1 rounded border border-[var(--border-receipt)] text-[10px] sm:text-xs min-h-[44px]">
           <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
           <div className="flex items-center shrink-0 gap-1">
             <input
@@ -100,7 +100,7 @@ export const FilterBar: React.FC = () => {
               value={dateRange[0]}
               aria-label="Start date filter"
               onChange={(e) => setDateRange([e.target.value, dateRange[1]])}
-              className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] shrink-0"
+              className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] min-h-[36px] shrink-0"
             />
             <span className="text-[var(--text-muted)]">to</span>
             <input
@@ -108,7 +108,7 @@ export const FilterBar: React.FC = () => {
               value={dateRange[1]}
               aria-label="End date filter"
               onChange={(e) => setDateRange([dateRange[0], e.target.value])}
-              className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] shrink-0"
+              className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] min-h-[36px] shrink-0"
             />
           </div>
         </div>
@@ -125,7 +125,7 @@ export const FilterBar: React.FC = () => {
                 key={m}
                 onClick={() => toggleMoodFilter(m)}
                 aria-pressed={isActive}
-                className={`px-1.5 py-0.5 rounded border capitalize transition-all shrink-0 ${
+                className={`px-2 py-1 rounded border capitalize transition-all shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center ${
                   isActive
                     ? 'bg-purple-600 text-white border-purple-400 font-bold'
                     : 'bg-[var(--bg-desk)] text-[var(--text-muted)] border-[var(--border-receipt)] hover:text-[var(--text-main)]'

@@ -35,6 +35,7 @@ export interface ReceiptState {
   closeMomentDrawer: () => void;
   unlockDiscovery: (id: string) => void;
   surpriseMe: () => void;
+  resetAllFilters: () => void;
   getFilteredReceipts: () => NormalizedReceipt[];
 }
 
@@ -212,6 +213,17 @@ export const useReceiptStore = create<ReceiptState>()(
           const newDisc = locked[Math.floor(Math.random() * locked.length)];
           set({ unlockedDiscoveryIds: [...currentUnlocks, newDisc] });
         }
+      },
+
+      resetAllFilters: () => {
+        const filtered = computeFilteredReceipts(get().receipts, '', [], [], ['2013-01-01', '2024-12-31']);
+        set({
+          searchQuery: '',
+          selectedTypes: [],
+          selectedMoods: [],
+          dateRange: ['2013-01-01', '2024-12-31'],
+          filteredReceipts: filtered,
+        });
       },
 
       getFilteredReceipts: () => get().filteredReceipts,
