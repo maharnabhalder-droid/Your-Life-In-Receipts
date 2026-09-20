@@ -43,7 +43,7 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-neutral-900 h-3 rounded-full overflow-hidden border border-neutral-700">
+        <div className="w-full bg-[var(--bg-desk)] h-3 rounded-full overflow-hidden border border-[var(--border-receipt)]">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPct}%` }}
@@ -67,24 +67,24 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
                 isUnlocked
                   ? isSelected
                     ? 'bg-amber-500/10 border-amber-500 ring-2 ring-amber-400'
-                    : 'bg-[var(--bg-desk-secondary)] border-neutral-700 hover:border-amber-500/50'
-                  : 'bg-neutral-900/50 border-neutral-800 opacity-70'
+                    : 'bg-[var(--bg-desk-secondary)] border-[var(--border-receipt)] hover:border-amber-500/50'
+                  : 'bg-[var(--bg-desk-secondary)] border-[var(--border-receipt)] opacity-70'
               }`}
             >
               <div className="flex items-start justify-between">
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-neutral-800 text-amber-400 border border-neutral-700">
+                <span className="text-xs font-bold px-2 py-0.5 rounded bg-[var(--bg-desk)] text-amber-500 dark:text-amber-400 border border-[var(--border-receipt)]">
                   {disc.badge}
                 </span>
 
                 <div className="flex items-center gap-1.5">
                   {isUnlocked ? (
-                    <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                       <CheckCircle2 className="w-3 h-3" /> UNLOCKED
                     </span>
                   ) : (
                     <button
                       onClick={() => unlockDiscovery(disc.id)}
-                      className="flex items-center gap-1 text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30 hover:bg-amber-500 hover:text-black transition-all cursor-pointer"
+                      className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30 hover:bg-amber-500 hover:text-black transition-all cursor-pointer"
                     >
                       <Lock className="w-3 h-3" /> UNLOCK NOW
                     </button>
@@ -101,11 +101,11 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
               </p>
 
               {isUnlocked && (
-                <div className="pt-2 border-t border-neutral-800 flex items-center justify-between text-[11px]">
-                  <span className="text-neutral-500">{disc.category}</span>
+                <div className="pt-2 border-t border-[var(--border-receipt)] flex items-center justify-between text-[11px]">
+                  <span className="text-[var(--text-muted)]">{disc.category}</span>
                   <button
                     onClick={() => setActiveEvidenceId(isSelected ? null : disc.id)}
-                    className="flex items-center gap-1 font-bold text-amber-400 hover:underline"
+                    className="flex items-center gap-1 font-bold text-amber-500 dark:text-amber-400 hover:underline"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     {isSelected ? 'Hide Evidence' : 'Inspect Evidence Receipts'}
@@ -124,16 +124,16 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
           animate={{ opacity: 1, y: 0 }}
           className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border-2 border-amber-500/40 space-y-4 shadow-2xl"
         >
-          <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+          <div className="flex items-center justify-between border-b border-[var(--border-receipt)] pb-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" />
+              <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
               <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
                 Evidence Receipts for "{selectedDisc.title}"
               </h3>
             </div>
             <button
               onClick={() => setActiveEvidenceId(null)}
-              className="text-xs text-neutral-400 hover:text-white"
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)]"
             >
               Close
             </button>
@@ -147,14 +147,14 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
                   selectReceipt(r.id);
                   setRoute('/roll');
                 }}
-                className="bg-neutral-900 p-3 rounded border border-neutral-700 hover:border-amber-400 cursor-pointer text-xs space-y-1"
+                className="bg-[var(--bg-desk)] p-3 rounded border border-[var(--border-receipt)] hover:border-amber-400 cursor-pointer text-xs space-y-1"
               >
-                <div className="flex justify-between font-bold text-amber-400">
+                <div className="flex justify-between font-bold text-amber-500 dark:text-amber-400">
                   <span>[{r.type.toUpperCase()}] {r.title}</span>
                   <span>{new Date(r.timestamp).toLocaleDateString()}</span>
                 </div>
-                <div className="text-[11px] text-neutral-300 truncate">{r.text || r.subtitle}</div>
-                <div className="text-[10px] text-amber-300 underline pt-1">
+                <div className="text-[11px] text-[var(--text-main)] truncate">{r.text || r.subtitle}</div>
+                <div className="text-[10px] text-amber-500 dark:text-amber-300 underline pt-1">
                   Click to jump to receipt in Roll →
                 </div>
               </div>

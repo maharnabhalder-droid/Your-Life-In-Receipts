@@ -84,6 +84,8 @@ export const RollView: React.FC = () => {
     );
   }, [selectedReceiptId, computed?.connections]);
 
+  const selectReceipt = useReceiptStore((state) => state.selectReceipt);
+
   return (
     <div className="flex flex-col min-h-screen">
       <FilterBar />
@@ -129,8 +131,17 @@ export const RollView: React.FC = () => {
                     }}
                     className="pb-3"
                     onClick={() => {
-                      if (item.type === 'receipt' && computed?.moments.length) {
-                        openMomentDrawer(computed.moments[0]);
+                      if (item.type === 'receipt') {
+                        selectReceipt(item.data.id);
+                        const matchedMoment = computed?.moments.find(m => m.receiptIds.includes(item.data.id)) || {
+                          id: `context-${item.data.id}`,
+                          title: `Thread for ${item.data.title}`,
+                          description: `Direct affinity links and sequence context for receipt #${item.data.id.slice(-6)}.`,
+                          receiptIds: [item.data.id],
+                          connectionStrength: 0.88,
+                          patternType: 'Individual Receipt Thread'
+                        };
+                        openMomentDrawer(matchedMoment);
                       }
                     }}
                   >

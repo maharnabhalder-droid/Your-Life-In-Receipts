@@ -65,6 +65,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={onOpenCommandPalette}
+            aria-label="Search receipts by keyword (Cmd+K)"
             className="flex items-center gap-1 px-2.5 py-2 rounded-md bg-[var(--bg-desk-secondary)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-neutral-700 text-xs font-mono min-h-[38px]"
             title="Global Search (Ctrl+K)"
           >
@@ -78,6 +79,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
               setRoute('/roll');
               surpriseMe();
             }}
+            aria-label="Jump to a surprise connected moment"
             className="flex items-center gap-1 px-2.5 py-2 rounded-md bg-gradient-to-r from-amber-500 to-purple-600 text-black font-mono text-xs font-bold shadow hover:brightness-110 transition-all min-h-[38px]"
             title="Jump to a Surprise Connected Moment"
           >
@@ -87,6 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
 
           <button
             onClick={toggleTheme}
+            aria-label="Toggle between dark and light themes"
             className="p-2 rounded-md bg-[var(--bg-desk-secondary)] text-[var(--text-main)] border border-neutral-700 hover:border-amber-500 transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center"
             title={`Switch to ${theme === 'dark' ? 'Day Desk (Light)' : 'Night Shift (Dark)'} Theme`}
           >

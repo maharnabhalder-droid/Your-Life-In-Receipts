@@ -48,7 +48,8 @@ export const ReceiptBase: React.FC<ReceiptBaseProps> = ({
       ? 'torn-bottom'
       : '';
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     selectReceipt(isSelected ? null : receipt.id);
     if (onClick) onClick();
   };

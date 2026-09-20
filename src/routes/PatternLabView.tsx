@@ -1,9 +1,10 @@
 import React from 'react';
 import { BarChart3, Clock, TrendingUp, Sparkles, MapPin, DollarSign } from 'lucide-react';
 import { useReceiptStore } from '../store/useReceiptStore';
+import { useTheme } from '../theme/ThemeContext';
 
-function getHeatmapColor(count: number, maxCount: number): string {
-  if (count <= 0) return '#27272a';
+function getHeatmapColor(count: number, maxCount: number, isDark: boolean): string {
+  if (count <= 0) return isDark ? '#27272a' : '#e2e8f0';
   const ratio = Math.min(1, count / (maxCount || 1));
   const hue = Math.round(280 - ratio * 240); // Purple -> Amber -> Red
   const lightness = Math.round(35 + ratio * 35);
@@ -12,6 +13,8 @@ function getHeatmapColor(count: number, maxCount: number): string {
 
 export const PatternLabView: React.FC = () => {
   const computed = useReceiptStore((state) => state.computed);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const heatmap = computed?.heatmap;
   const interestStream = computed?.interestStream;
@@ -22,7 +25,7 @@ export const PatternLabView: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 font-mono space-y-10">
       {/* Header */}
-      <div className="space-y-2 border-b border-neutral-800 pb-4">
+      <div className="space-y-2 border-b border-[var(--border-receipt)] pb-4">
         <div className="flex items-center gap-2">
           <BarChart3 className="w-6 h-6 text-amber-500" />
           <h2 className="font-serif font-bold text-2xl md:text-3xl text-[var(--text-main)]">
@@ -35,22 +38,22 @@ export const PatternLabView: React.FC = () => {
       </div>
 
       {/* 1. Hour x Category Heatmap */}
-      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-neutral-800 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-[var(--border-receipt)] space-y-4 shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border-receipt)] pb-3">
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-amber-500" />
             <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
               1. Hour of Day (00..23) × Category Heatmap
             </h3>
           </div>
-          <span className="text-xs text-neutral-400">24 × 9 Matrix</span>
+          <span className="text-xs text-[var(--text-muted)]">24 × 9 Matrix</span>
         </div>
 
         <div className="overflow-x-auto">
-          <svg width="700" height="240" className="mx-auto block font-mono text-[10px]">
+          <svg viewBox="0 0 700 240" className="w-full h-auto max-w-full mx-auto block font-mono text-[10px]">
             {/* Hour Labels */}
             {Array.from({ length: 24 }).map((_, h) => (
-              <text key={h} x={50 + h * 26} y="20" fill="#a1a1aa" textAnchor="middle">
+              <text key={h} x={50 + h * 26} y="20" fill="currentColor" textAnchor="middle" className="text-[var(--text-muted)]">
                 {h}h
               </text>
             ))}
@@ -68,13 +71,13 @@ export const PatternLabView: React.FC = () => {
               'photo',
             ].map((cat, rowIdx) => (
               <g key={cat} transform={`translate(0, ${40 + rowIdx * 20})`}>
-                <text x="40" y="12" fill="#e4e4e7" textAnchor="end" className="capitalize font-bold">
+                <text x="40" y="12" fill="currentColor" textAnchor="end" className="capitalize font-bold text-[var(--text-main)]">
                   {cat}
                 </text>
                 {Array.from({ length: 24 }).map((_, h) => {
                   const cell = heatmap?.cells.find((c) => c.hour === h && c.category === cat);
                   const count = cell?.count || 0;
-                  const fill = getHeatmapColor(count, heatmap?.maxCount || 100);
+                  const fill = getHeatmapColor(count, heatmap?.maxCount || 100, isDark);
 
                   return (
                     <rect
@@ -96,25 +99,25 @@ export const PatternLabView: React.FC = () => {
           </svg>
         </div>
 
-        <div className="bg-amber-500/10 p-3 rounded border border-amber-500/20 text-xs text-amber-300 font-serif italic">
+        <div className="bg-amber-500/10 p-3 rounded border border-amber-500/20 text-xs text-amber-500 dark:text-amber-300 font-serif italic">
           💡 Insight Caption: "{heatmap?.insight || 'Computing heatmap...'}"
         </div>
       </div>
 
       {/* 2. Chapter Interest Shift Stream */}
-      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-neutral-800 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-[var(--border-receipt)] space-y-4 shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border-receipt)] pb-3">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-purple-500" />
             <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
               2. Chapter-by-Chapter Interest Shift Stream
             </h3>
           </div>
-          <span className="text-xs text-neutral-400">5 Eras Evolution</span>
+          <span className="text-xs text-[var(--text-muted)]">5 Eras Evolution</span>
         </div>
 
         <div className="overflow-x-auto">
-          <svg width="700" height="200" className="mx-auto block font-mono text-[10px]">
+          <svg viewBox="0 0 700 200" className="w-full h-auto max-w-full mx-auto block font-mono text-[10px]">
             {/* Render Stacked Bars per Chapter */}
             {interestStream?.data.map((ch, idx) => {
               const total = ch.music + ch.purchase + ch.place + ch.movie + ch.event + ch.message + ch.note + ch.search + ch.photo || 1;
@@ -133,7 +136,7 @@ export const PatternLabView: React.FC = () => {
 
               return (
                 <g key={ch.chapterId}>
-                  <text x={x + barWidth / 2} y="180" fill="#a1a1aa" textAnchor="middle" className="font-bold">
+                  <text x={x + barWidth / 2} y="180" fill="currentColor" textAnchor="middle" className="font-bold text-[var(--text-main)]">
                     Ch {idx + 1}
                   </text>
 
@@ -161,25 +164,25 @@ export const PatternLabView: React.FC = () => {
           </svg>
         </div>
 
-        <div className="bg-purple-500/10 p-3 rounded border border-purple-500/20 text-xs text-purple-300 font-serif italic">
+        <div className="bg-purple-500/10 p-3 rounded border border-purple-500/20 text-xs text-purple-600 dark:text-purple-300 font-serif italic">
           💡 Insight Caption: "{interestStream?.insight}"
         </div>
       </div>
 
       {/* 3. Mood Line Timeline */}
-      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-neutral-800 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-[var(--border-receipt)] space-y-4 shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border-receipt)] pb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-indigo-400" />
             <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
               3. Lifetime Mood Score Timeline
             </h3>
           </div>
-          <span className="text-xs text-neutral-400">Moving Average</span>
+          <span className="text-xs text-[var(--text-muted)]">Moving Average</span>
         </div>
 
         <div className="overflow-x-auto">
-          <svg width="700" height="180" className="mx-auto block font-mono text-[10px]">
+          <svg viewBox="0 0 700 180" className="w-full h-auto max-w-full mx-auto block font-mono text-[10px]">
             {/* Draw Moving Average Path */}
             {moodTimeline?.points && moodTimeline.points.length > 1 && (
               <polyline
@@ -215,54 +218,54 @@ export const PatternLabView: React.FC = () => {
           </svg>
         </div>
 
-        <div className="bg-indigo-500/10 p-3 rounded border border-indigo-500/20 text-xs text-indigo-300 font-serif italic">
+        <div className="bg-indigo-500/10 p-3 rounded border border-indigo-500/20 text-xs text-indigo-600 dark:text-indigo-300 font-serif italic">
           💡 Insight Caption: "{moodTimeline?.insight}"
         </div>
       </div>
 
       {/* 4. Spending by Category over Time */}
-      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-neutral-800 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-[var(--border-receipt)] space-y-4 shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border-receipt)] pb-3">
           <div className="flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-emerald-500" />
             <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
               4. Annual Expenditure Curve (₹ INR)
             </h3>
           </div>
-          <span className="text-xs text-neutral-400">Financial Growth</span>
+          <span className="text-xs text-[var(--text-muted)]">Financial Growth</span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {spending?.points.map((pt) => (
-            <div key={pt.period} className="bg-neutral-900 p-3 rounded border border-neutral-800 space-y-1">
-              <div className="text-[10px] text-neutral-400 font-bold">{pt.period}</div>
-              <div className="text-base font-bold text-emerald-400">₹{pt.totalSpent.toLocaleString()}</div>
-              <div className="text-[10px] text-neutral-500 truncate">
+            <div key={pt.period} className="bg-[var(--bg-desk-secondary)] p-3 rounded border border-[var(--border-receipt)] text-[var(--text-main)] space-y-1">
+              <div className="text-[10px] text-[var(--text-muted)] font-bold">{pt.period}</div>
+              <div className="text-base font-bold text-emerald-500 dark:text-emerald-400">₹{pt.totalSpent.toLocaleString()}</div>
+              <div className="text-[10px] text-[var(--text-muted)] truncate">
                 Top: {Object.keys(pt.categories)[0] || 'Expenses'}
               </div>
             </div>
           ))}
         </div>
 
-        <div className="bg-emerald-500/10 p-3 rounded border border-emerald-500/20 text-xs text-emerald-300 font-serif italic">
+        <div className="bg-emerald-500/10 p-3 rounded border border-emerald-500/20 text-xs text-emerald-600 dark:text-emerald-300 font-serif italic">
           💡 Insight Caption: "{spending?.insight}"
         </div>
       </div>
 
       {/* 5. Constellation Graph */}
-      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-neutral-800 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-[var(--border-receipt)] space-y-4 shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border-receipt)] pb-3">
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5 text-pink-500" />
             <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
               5. Recurring Places & Artists Constellation Graph
             </h3>
           </div>
-          <span className="text-xs text-neutral-400">Graph Gravity Nodes</span>
+          <span className="text-xs text-[var(--text-muted)]">Graph Gravity Nodes</span>
         </div>
 
         <div className="overflow-x-auto">
-          <svg width="500" height="380" className="mx-auto block font-mono text-[10px]">
+          <svg viewBox="0 0 500 380" className="w-full h-auto max-w-md mx-auto block font-mono text-[10px]">
             {/* Draw Links */}
             {constellation?.links.map((link, i) => {
               const sourceNode = constellation.nodes.find((n) => n.id === link.source);
@@ -276,9 +279,9 @@ export const PatternLabView: React.FC = () => {
                   y1={sourceNode.y || 0}
                   x2={targetNode.x || 0}
                   y2={targetNode.y || 0}
-                  stroke="#52525b"
+                  stroke={isDark ? '#52525b' : '#cbd5e1'}
                   strokeWidth="1"
-                  strokeOpacity="0.4"
+                  strokeOpacity="0.6"
                 />
               );
             })}
@@ -289,7 +292,7 @@ export const PatternLabView: React.FC = () => {
               return (
                 <g key={node.id} transform={`translate(${node.x}, ${node.y})`}>
                   <circle r={node.val / 2} fill={fill} opacity="0.85" className="hover:opacity-100 cursor-pointer" />
-                  <text y={node.val / 2 + 10} fill="#e4e4e7" textAnchor="middle" className="font-bold text-[9px]">
+                  <text y={node.val / 2 + 10} fill="currentColor" textAnchor="middle" className="font-bold text-[9px] text-[var(--text-main)]">
                     {node.name.length > 15 ? node.name.slice(0, 14) + '…' : node.name}
                   </text>
                 </g>
@@ -298,10 +301,11 @@ export const PatternLabView: React.FC = () => {
           </svg>
         </div>
 
-        <div className="bg-pink-500/10 p-3 rounded border border-pink-500/20 text-xs text-pink-300 font-serif italic">
+        <div className="bg-pink-500/10 p-3 rounded border border-pink-500/20 text-xs text-pink-600 dark:text-pink-300 font-serif italic">
           💡 Insight Caption: "{constellation?.insight}"
         </div>
       </div>
     </div>
   );
 };
+

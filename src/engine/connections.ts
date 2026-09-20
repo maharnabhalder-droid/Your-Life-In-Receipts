@@ -9,15 +9,29 @@ export function calculateConnections(
   }
 
   const connections: ThreadConnection[] = [];
+  let targetReceipts: NormalizedReceipt[];
 
-  // Filter to a focused sample if activeReceiptId is specified, or compute high-strength edges
-  const targetReceipts = activeReceiptId
-    ? receipts.filter(
-        (r) =>
-          r.id === activeReceiptId ||
-          Math.abs(new Date(r.timestamp).getTime() - new Date(receipts.find((x) => x.id === activeReceiptId)?.timestamp || 0).getTime()) < 3600 * 24 * 14 * 1000
-      )
-    : receipts.slice(0, 800); // Compute top representative subgraph
+  if (activeReceiptId) {
+    const activeReceipt = receipts.find((x) => x.id === activeReceiptId);
+    const activeTime = activeReceipt ? new Date(activeReceipt.timestamp).getTime() : 0;
+    targetReceipts = receipts.filter(
+      (r) =>
+        r.id === activeReceiptId ||
+        Math.abs(new Date(r.timestamp).getTime() - activeTime) < 3600 * 24 * 14 * 1000
+    );
+  } else {
+    // Stratified sampling across all years (2013-2024) and all receipt categories
+    const nonMusic = receipts.filter((r) => r.type !== 'music');
+    const music = receipts.filter((r) => r.type === 'music');
+
+    // Sample music evenly across years to cover the entire lifetime timeline
+    const musicStep = Math.max(1, Math.floor(music.length / 800));
+    const sampledMusic = music.filter((_, idx) => idx % musicStep === 0);
+
+    targetReceipts = [...nonMusic, ...sampledMusic].sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+  }
 
   for (let i = 0; i < targetReceipts.length; i++) {
     const a = targetReceipts[i];
@@ -26,9 +40,12 @@ export function calculateConnections(
     for (let j = i + 1; j < targetReceipts.length; j++) {
       const b = targetReceipts[j];
       const timeB = new Date(b.timestamp).getTime();
-      const diffHours = Math.abs(timeA - timeB) / (1000 * 3600);
+      const diffMs = timeB - timeA;
 
-      if (diffHours > 72) continue; // Only pair receipts within 3 days window
+      // Since targetReceipts is sorted chronologically, break if time delta exceeds 72 hours
+      if (diffMs > 72 * 3600 * 1000) break;
+
+      const diffHours = diffMs / (1000 * 3600);
 
       let score = 0;
       const reasons: string[] = [];
@@ -85,12 +102,12 @@ export function calculateConnections(
     }
   }
 
-  // Derive Moments dynamically from matched receipt clusters
-  const mom1Receipts = targetReceipts.filter((r) => r.type === 'music' || r.type === 'place' || r.type === 'photo' || r.type === 'purchase').slice(0, 5);
-  const mom2Receipts = targetReceipts.filter((r) => r.title.includes('Beatles') || (r.text || '').includes('Planner')).slice(0, 4);
-  const mom3Receipts = targetReceipts.filter((r) => r.type === 'search' || (r.subtitle || '').includes('Edtech') || (r.text || '').includes('Kindle')).slice(0, 3);
-  const mom4Receipts = targetReceipts.filter((r) => (r.tags || []).includes('Festivals') || r.title.includes('Sweets') || r.type === 'photo').slice(0, 4);
-  const mom5Receipts = targetReceipts.filter((r) => (r.tags || []).includes('Health') || (r.text || '').includes('Doctor') || r.mood === 'melancholic').slice(0, 4);
+  // Derive Moments dynamically from matched receipt clusters across entire dataset
+  const mom1Receipts = receipts.filter((r) => r.type === 'music' || r.type === 'place' || r.type === 'photo' || r.type === 'purchase').slice(0, 5);
+  const mom2Receipts = receipts.filter((r) => r.title.includes('Beatles') || (r.text || '').includes('Planner')).slice(0, 4);
+  const mom3Receipts = receipts.filter((r) => r.type === 'search' || (r.subtitle || '').includes('Edtech') || (r.text || '').includes('Kindle')).slice(0, 3);
+  const mom4Receipts = receipts.filter((r) => (r.tags || []).includes('Festivals') || r.title.includes('Sweets') || r.type === 'photo').slice(0, 4);
+  const mom5Receipts = receipts.filter((r) => (r.tags || []).includes('Health') || (r.text || '').includes('Doctor') || r.mood === 'melancholic').slice(0, 4);
 
   const moments: Moment[] = [
     {

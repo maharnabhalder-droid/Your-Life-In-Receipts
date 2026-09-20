@@ -54,7 +54,7 @@ export const FilterBar: React.FC = () => {
   const totalCount = useReceiptStore((state) => state.receipts.length);
 
   return (
-    <div className="bg-[var(--bg-desk-secondary)] border-b border-neutral-800 px-3 py-2.5 md:px-4 sticky top-12 z-30 shadow-inner font-mono text-xs text-[var(--text-main)] space-y-2">
+    <div className="bg-[var(--bg-desk-secondary)] border-b border-[var(--border-receipt)] px-3 py-2.5 md:px-4 sticky top-[54px] z-30 shadow-inner font-mono text-xs text-[var(--text-main)] space-y-2">
       <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
         {/* Type Filter Pills (Horizontal Scrollable on Mobile) */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-full">
@@ -68,10 +68,11 @@ export const FilterBar: React.FC = () => {
               <button
                 key={t}
                 onClick={() => toggleTypeFilter(t)}
+                aria-pressed={isActive}
                 className={`px-2 py-1 rounded border text-[11px] font-medium transition-all flex items-center gap-1 shrink-0 ${
                   isActive
                     ? 'bg-amber-500 text-black border-amber-400 font-bold shadow'
-                    : 'bg-neutral-800/70 text-neutral-300 border-neutral-700 hover:border-neutral-500'
+                    : 'bg-[var(--bg-desk)] text-[var(--text-main)] border-[var(--border-receipt)] hover:border-amber-500/50'
                 }`}
               >
                 <span>{typeIcons[t]}</span>
@@ -91,26 +92,28 @@ export const FilterBar: React.FC = () => {
         </div>
 
         {/* Date Range Scrubber */}
-        <div className="flex items-center gap-1.5 bg-neutral-900/90 px-2 py-1 rounded border border-neutral-700 text-[10px] sm:text-xs">
+        <div className="flex items-center gap-1.5 shrink-0 bg-[var(--bg-desk)] px-2 py-1 rounded border border-[var(--border-receipt)] text-[10px] sm:text-xs">
           <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-          <input
-            type="date"
-            value={dateRange[0]}
-            onChange={(e) => setDateRange([e.target.value, dateRange[1]])}
-            className="bg-transparent text-[10px] sm:text-[11px] text-neutral-200 focus:outline-none cursor-pointer max-w-[100px] sm:max-w-none"
-          />
-          <span className="text-neutral-500">to</span>
-          <input
-            type="date"
-            value={dateRange[1]}
-            onChange={(e) => setDateRange([dateRange[0], e.target.value])}
-            className="bg-transparent text-[10px] sm:text-[11px] text-neutral-200 focus:outline-none cursor-pointer max-w-[100px] sm:max-w-none"
-          />
+          <div className="flex items-center shrink-0 gap-1">
+            <input
+              type="date"
+              value={dateRange[0]}
+              onChange={(e) => setDateRange([e.target.value, dateRange[1]])}
+              className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] shrink-0"
+            />
+            <span className="text-[var(--text-muted)]">to</span>
+            <input
+              type="date"
+              value={dateRange[1]}
+              onChange={(e) => setDateRange([dateRange[0], e.target.value])}
+              className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] shrink-0"
+            />
+          </div>
         </div>
       </div>
 
       {/* Mood Filters & Active Search Badge */}
-      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 pt-1 text-[10px] border-t border-neutral-800/50">
+      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 pt-1 text-[10px] border-t border-[var(--border-receipt)]">
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-full">
           <span className="text-[var(--text-muted)] font-bold shrink-0">MOOD:</span>
           {allMoods.map((m) => {
@@ -119,10 +122,11 @@ export const FilterBar: React.FC = () => {
               <button
                 key={m}
                 onClick={() => toggleMoodFilter(m)}
+                aria-pressed={isActive}
                 className={`px-1.5 py-0.5 rounded border capitalize transition-all shrink-0 ${
                   isActive
                     ? 'bg-purple-600 text-white border-purple-400 font-bold'
-                    : 'bg-neutral-800 text-neutral-400 border-neutral-700 hover:text-neutral-200'
+                    : 'bg-[var(--bg-desk)] text-[var(--text-muted)] border-[var(--border-receipt)] hover:text-[var(--text-main)]'
                 }`}
               >
                 {m}
@@ -132,9 +136,9 @@ export const FilterBar: React.FC = () => {
         </div>
 
         <div className="text-[var(--text-muted)] font-mono">
-          Showing <span className="font-bold text-amber-400">{filteredCount}</span> of {totalCount} receipts
+          Showing <span className="font-bold text-amber-500 dark:text-amber-400">{filteredCount}</span> of {totalCount} receipts
           {searchQuery && (
-            <span className="ml-2 bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30">
+            <span className="ml-2 bg-amber-500/20 text-amber-600 dark:text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30">
               Query: "{searchQuery}"
               <button onClick={() => setSearchQuery('')} className="ml-1 text-red-400 font-bold">×</button>
             </span>
