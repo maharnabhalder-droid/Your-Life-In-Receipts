@@ -32,16 +32,16 @@ export const LocationSchema = z.object({
 });
 
 export const NormalizedReceiptSchema = z.object({
-  id: z.string(),
+  id: z.coerce.string(),
   type: ReceiptTypeSchema,
   timestamp: z.string(), // ISO String
-  title: z.string(),
-  subtitle: z.string().optional(),
-  tags: z.array(z.string()),
+  title: z.coerce.string(),
+  subtitle: z.coerce.string().optional(),
+  tags: z.array(z.coerce.string()),
   location: LocationSchema.optional(),
   amount: z.number().optional().default(0),
   mood: MoodSchema.optional().default('focused'),
-  text: z.string().optional(),
+  text: z.coerce.string().optional(),
   meta: z.record(z.any()).optional().default({}),
 });
 
