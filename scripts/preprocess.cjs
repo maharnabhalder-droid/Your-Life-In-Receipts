@@ -155,7 +155,7 @@ cardTrans.forEach((r, idx) => {
     const mood = isFraud ? 'restless' : determineMood(ts, merchant, type);
 
     normalized.push({
-      id: `card-${r.trans_id || idx}`,
+      id: `card-${idx}-${r.trans_id || idx}`,
       type,
       timestamp: ts,
       title: merchant,

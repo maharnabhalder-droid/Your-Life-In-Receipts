@@ -15,6 +15,7 @@ export const PatternLabView: React.FC = () => {
   const computed = useReceiptStore((state) => state.computed);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const [selectedCell, setSelectedCell] = React.useState<{ cat: string; hour: number; count: number } | null>(null);
 
   const heatmap = computed?.heatmap;
   const interestStream = computed?.interestStream;
@@ -78,6 +79,7 @@ export const PatternLabView: React.FC = () => {
                   const cell = heatmap?.cells.find((c) => c.hour === h && c.category === cat);
                   const count = cell?.count || 0;
                   const fill = getHeatmapColor(count, heatmap?.maxCount || 100, isDark);
+                  const isSelected = selectedCell?.cat === cat && selectedCell?.hour === h;
 
                   return (
                     <rect
@@ -88,6 +90,9 @@ export const PatternLabView: React.FC = () => {
                       height={16}
                       rx={2}
                       fill={fill}
+                      stroke={isSelected ? '#f59e0b' : 'none'}
+                      strokeWidth={isSelected ? 2 : 0}
+                      onClick={() => setSelectedCell({ cat, hour: h, count })}
                       className="transition-all hover:opacity-80 cursor-pointer"
                     >
                       <title>{`${cat} at ${h}:00 - ${count} receipts`}</title>
@@ -98,6 +103,13 @@ export const PatternLabView: React.FC = () => {
             ))}
           </svg>
         </div>
+
+        {selectedCell && (
+          <div className="bg-amber-500/20 border border-amber-500/40 p-2 rounded text-xs flex items-center justify-between text-amber-500 dark:text-amber-300 font-bold">
+            <span>Tapped Matrix Cell: <span className="capitalize">{selectedCell.cat}</span> at {selectedCell.hour}:00 — <span className="text-[var(--text-main)]">{selectedCell.count} receipts</span></span>
+            <button onClick={() => setSelectedCell(null)} className="text-red-400 font-bold ml-2">✕</button>
+          </div>
+        )}
 
         <div className="bg-amber-500/10 p-3 rounded border border-amber-500/20 text-xs text-amber-500 dark:text-amber-300 font-serif italic">
           💡 Insight Caption: "{heatmap?.insight || 'Computing heatmap...'}"

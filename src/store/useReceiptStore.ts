@@ -48,10 +48,13 @@ function computeFilteredReceipts(
   if (!receipts || receipts.length === 0) return [];
 
   const queryLower = searchQuery.toLowerCase().trim();
-  const startMs = new Date(dateRange[0]).getTime();
-  const endMs = new Date(dateRange[1]).getTime() + 86400000;
+  const rawStartMs = new Date(dateRange[0]).getTime();
+  const rawEndMs = new Date(dateRange[1]).getTime() + 86400000;
 
-  const isDefaultDate = dateRange[0] === '2013-01-01' && dateRange[1] === '2024-12-31';
+  const startMs = isNaN(rawStartMs) ? new Date('2013-01-01').getTime() : rawStartMs;
+  const endMs = isNaN(rawEndMs) ? new Date('2024-12-31').getTime() + 86400000 : rawEndMs;
+
+  const isDefaultDate = (dateRange[0] === '2013-01-01' || !dateRange[0]) && (dateRange[1] === '2024-12-31' || !dateRange[1]);
 
   if (!queryLower && selectedTypes.length === 0 && selectedMoods.length === 0 && isDefaultDate) {
     return receipts;

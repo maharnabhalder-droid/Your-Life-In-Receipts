@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
               <button
                 key={item.id}
                 onClick={() => setRoute(item.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono font-medium transition-colors shrink-0 min-h-[38px] ${
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono font-medium transition-colors shrink-0 min-h-[44px] min-w-[44px] justify-center ${
                   isActive
                     ? 'bg-amber-500 text-black font-bold shadow'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-neutral-800/40'
@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
           <button
             onClick={onOpenCommandPalette}
             aria-label="Search receipts by keyword (Cmd+K)"
-            className="flex items-center gap-1 px-2.5 py-2 rounded-md bg-[var(--bg-desk-secondary)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-neutral-700 text-xs font-mono min-h-[38px]"
+            className="flex items-center gap-1 px-2.5 py-2 rounded-md bg-[var(--bg-desk-secondary)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-neutral-700 text-xs font-mono min-h-[44px] min-w-[44px] justify-center"
             title="Global Search (Ctrl+K)"
           >
             <Search className="w-3.5 h-3.5" />
@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
               surpriseMe();
             }}
             aria-label="Jump to a surprise connected moment"
-            className="flex items-center gap-1 px-2.5 py-2 rounded-md bg-gradient-to-r from-amber-500 to-purple-600 text-black font-mono text-xs font-bold shadow hover:brightness-110 transition-all min-h-[38px]"
+            className="flex items-center gap-1 px-2.5 py-2 rounded-md bg-gradient-to-r from-amber-500 to-purple-600 text-black font-mono text-xs font-bold shadow hover:brightness-110 transition-all min-h-[44px] min-w-[44px] justify-center"
             title="Jump to a Surprise Connected Moment"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
           <button
             onClick={toggleTheme}
             aria-label="Toggle between dark and light themes"
-            className="p-2 rounded-md bg-[var(--bg-desk-secondary)] text-[var(--text-main)] border border-neutral-700 hover:border-amber-500 transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center"
+            className="p-2 rounded-md bg-[var(--bg-desk-secondary)] text-[var(--text-main)] border border-neutral-700 hover:border-amber-500 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             title={`Switch to ${theme === 'dark' ? 'Day Desk (Light)' : 'Night Shift (Dark)'} Theme`}
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
