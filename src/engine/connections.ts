@@ -85,45 +85,51 @@ export function calculateConnections(
     }
   }
 
-  // Generate Key Curated Moments from connected subgraphs
+  // Derive Moments dynamically from matched receipt clusters
+  const mom1Receipts = targetReceipts.filter((r) => r.type === 'music' || r.type === 'place' || r.type === 'photo' || r.type === 'purchase').slice(0, 5);
+  const mom2Receipts = targetReceipts.filter((r) => r.title.includes('Beatles') || (r.text || '').includes('Planner')).slice(0, 4);
+  const mom3Receipts = targetReceipts.filter((r) => r.type === 'search' || (r.subtitle || '').includes('Edtech') || (r.text || '').includes('Kindle')).slice(0, 3);
+  const mom4Receipts = targetReceipts.filter((r) => (r.tags || []).includes('Festivals') || r.title.includes('Sweets') || r.type === 'photo').slice(0, 4);
+  const mom5Receipts = targetReceipts.filter((r) => (r.tags || []).includes('Health') || (r.text || '').includes('Doctor') || r.mood === 'melancholic').slice(0, 4);
+
   const moments: Moment[] = [
     {
       id: 'mom-1',
       title: 'Song -> Location -> Photo -> Purchase -> Event',
-      description: 'Late-night listening to acoustic tracks followed by morning train travel to station, food snack, and festival entry.',
-      receiptIds: targetReceipts.filter((r) => r.type === 'music' || r.type === 'place' || r.type === 'photo' || r.type === 'purchase').slice(0, 5).map((r) => r.id),
+      description: `Multi-modal chain connecting ${mom1Receipts.length} receipts spanning music streaming, local transport, food, and photo capture.`,
+      receiptIds: mom1Receipts.map((r) => r.id),
       connectionStrength: 0.94,
       patternType: 'Multi-Modal Narrative Chain',
     },
     {
       id: 'mom-2',
       title: 'The 2 AM Beatles & Undated Planner',
-      description: 'Continuous Beatles discography stream ending at 02:44 AM, followed immediately by planner purchase note.',
-      receiptIds: targetReceipts.filter((r) => r.title.includes('Beatles') || r.text?.includes('Planner')).slice(0, 4).map((r) => r.id),
+      description: `Late-night Beatles listening session linked with undated planner and focus notes (${mom2Receipts.length} connected entries).`,
+      receiptIds: mom2Receipts.map((r) => r.id),
       connectionStrength: 0.89,
       patternType: 'Late-Night Deep Focus',
     },
     {
       id: 'mom-3',
       title: 'Search Intent -> Edtech & Book Purchase',
-      description: 'Repeated Kindle book searches resulting in course enrollment transaction within 24 hours.',
-      receiptIds: targetReceipts.filter((r) => r.type === 'search' || r.subtitle?.includes('Edtech') || r.text?.includes('Kindle')).slice(0, 3).map((r) => r.id),
+      description: `Intent-to-action pipeline linking ${mom3Receipts.length} search queries with technical course and book purchases.`,
+      receiptIds: mom3Receipts.map((r) => r.id),
       connectionStrength: 0.92,
       patternType: 'Intent to Action Pipeline',
     },
     {
       id: 'mom-4',
       title: 'Ganesh Festival -> Sweets & Family Photo',
-      description: 'Ganesh Pujan idol transaction linked with sweets purchase and geotagged family snapshot.',
-      receiptIds: targetReceipts.filter((r) => r.tags.includes('Festivals') || r.title.includes('Sweets') || r.type === 'photo').slice(0, 4).map((r) => r.id),
+      description: `Cultural celebration cluster connecting festival idol entries, sweets purchases, and family snapshot photos (${mom4Receipts.length} entries).`,
+      receiptIds: mom4Receipts.map((r) => r.id),
       connectionStrength: 0.88,
       patternType: 'Cultural Tradition Arc',
     },
     {
       id: 'mom-5',
       title: 'Health Care -> Doctor Visit & Healing Music',
-      description: 'Doctor fee receipt matched with medicine transaction and acoustic recovery playlist.',
-      receiptIds: targetReceipts.filter((r) => r.tags.includes('Health') || r.text?.includes('Doctor') || r.mood === 'melancholic').slice(0, 4).map((r) => r.id),
+      description: `Care & recovery loop matching ${mom5Receipts.length} doctor fee, medicine, and acoustic recovery receipts.`,
+      receiptIds: mom5Receipts.map((r) => r.id),
       connectionStrength: 0.85,
       patternType: 'Care & Recovery Loop',
     },

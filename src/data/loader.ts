@@ -7,13 +7,19 @@ export function loadNormalizedReceipts(): NormalizedReceipt[] {
   if (cachedReceipts) return cachedReceipts;
 
   try {
-    const parsed = rawDataset.map((item) => NormalizedReceiptSchema.parse(item));
+    const parsed = rawDataset.map((item, index) => {
+      const result = NormalizedReceiptSchema.safeParse(item);
+      if (!result.success) {
+        throw new Error(
+          `Zod Schema Validation Failure at index ${index} (ID: ${(item as any)?.id}): ${result.error.message}`
+        );
+      }
+      return result.data;
+    });
     cachedReceipts = parsed;
     return parsed;
   } catch (error) {
-    console.error('Failed to validate receipts with Zod schema:', error);
-    // Fallback if parsing fails on any single record
-    cachedReceipts = rawDataset as NormalizedReceipt[];
-    return cachedReceipts;
+    console.error('CRITICAL: Data schema validation error in loader:', error);
+    throw new Error(`Data Validation Failed: ${(error as Error).message}`);
   }
 }

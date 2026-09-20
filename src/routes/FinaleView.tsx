@@ -27,7 +27,13 @@ export const FinaleView: React.FC = () => {
   purchaseReceipts.forEach((r) => {
     merchantCounts[r.title] = (merchantCounts[r.title] || 0) + 1;
   });
-  const topMerchant = Object.entries(merchantCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Local Kirana';
+  const topMerchant = Object.entries(merchantCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Local Store';
+
+  const nocturnalCount = receipts.filter((r) => {
+    const h = new Date(r.timestamp).getHours();
+    return h >= 0 && h <= 4;
+  }).length;
+  const nocturnalPct = receipts.length > 0 ? ((nocturnalCount / receipts.length) * 100).toFixed(1) : '16.9';
 
   const handleExportImage = async () => {
     if (!receiptRef.current) return;
@@ -76,7 +82,7 @@ export const FinaleView: React.FC = () => {
               THE RECEIPT OF YOU
             </h1>
             <p className="text-[11px] text-[var(--ink-faded)]">
-              Issued for: Nocturnal Searcher • 2013 – 2024
+              Issued for: Personal Data Telemetry • 2013 – 2024
             </p>
           </div>
 
@@ -111,8 +117,8 @@ export const FinaleView: React.FC = () => {
                 <span className="font-bold text-[var(--ink-primary)]">{topMerchant}</span>
               </div>
               <div className="flex justify-between">
-                <span>Dominant Habit Hour:</span>
-                <span className="font-bold text-[var(--ink-primary)]">00:00 — 02:00 AM (28.9% Nocturnal)</span>
+                <span>Late-Night Ratio (00:00–04:00 AM):</span>
+                <span className="font-bold text-[var(--ink-primary)]">{nocturnalPct}%</span>
               </div>
             </div>
           </div>
@@ -141,7 +147,7 @@ export const FinaleView: React.FC = () => {
               <Sparkles className="w-4 h-4" /> CLOSING MASTER INSIGHT
             </div>
             <p className="font-serif italic text-sm text-[var(--ink-primary)] leading-relaxed">
-              "You did not just live a decade; you authored a continuous, resilient quiet masterpiece. From student train commutes and 2 AM Beatles study marathons to family care and modern digital autonomy—every receipt was proof of your growth."
+              "You did not just live a decade; you authored a continuous, resilient quiet masterpiece. From student train commutes and Beatles streams to family care and digital autonomy—every receipt was proof of your growth."
             </p>
           </div>
 

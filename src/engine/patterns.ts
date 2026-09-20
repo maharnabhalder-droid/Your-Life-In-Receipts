@@ -95,9 +95,9 @@ export function computeHeatmap(receipts: NormalizedReceipt[]): {
     return h >= 0 && h <= 4;
   }).length;
 
-  const nocturnalPct = Math.round((midnightCount / receipts.length) * 100);
+  const nocturnalPct = receipts.length > 0 ? Number(((midnightCount / receipts.length) * 100).toFixed(1)) : 0;
 
-  const insight = `Peak activity spike occurs at ${peakHour}:00 with ${maxCount} ${peakType} receipts logged. ${nocturnalPct}% of your lifetime digital footprints happened between Midnight and 4 AM.`;
+  const insight = `Peak activity spike occurs at ${peakHour}:00 with ${maxCount} ${peakType} receipts logged. ${nocturnalPct}% of your lifetime receipts occurred between 00:00 and 04:00 AM.`;
 
   return { cells, insight, maxCount };
 }
@@ -146,7 +146,25 @@ export function computeInterestStream(receipts: NormalizedReceipt[]): {
     };
   });
 
-  const insight = 'Interest distribution shifted dramatically from physical transport & acoustic notes in Chapter 1 to nocturnal stream loops in Chapter 2 & 4, settling into balanced digital payments in Chapter 5.';
+  const getTopCat = (point: InterestStreamPoint): string => {
+    const keys: Array<keyof Omit<InterestStreamPoint, 'chapterId' | 'chapterTitle'>> = [
+      'music',
+      'purchase',
+      'place',
+      'movie',
+      'event',
+      'message',
+      'note',
+      'search',
+      'photo',
+    ];
+    return keys.reduce((prev, curr) => (point[curr] > point[prev] ? curr : prev), keys[0]);
+  };
+
+  const ch1Top = data[0] ? getTopCat(data[0]) : 'music';
+  const ch5Top = data[data.length - 1] ? getTopCat(data[data.length - 1]) : 'purchase';
+
+  const insight = `Interest distribution shifted from ${ch1Top} dominance in Chapter 1 to ${ch5Top} focus in Chapter 5.`;
 
   return { data, insight };
 }
@@ -164,7 +182,6 @@ export function computeMoodTimeline(receipts: NormalizedReceipt[]): {
     balanced: 5,
   };
 
-  // Sample every 50th receipt chronologically
   const sampled = receipts.filter((_, idx) => idx % Math.max(1, Math.floor(receipts.length / 80)) === 0);
 
   let runningSum = 0;
@@ -180,7 +197,12 @@ export function computeMoodTimeline(receipts: NormalizedReceipt[]): {
     };
   });
 
-  const insight = 'Your emotional curve hit a reflective low point in 2016 (introspective 2 AM Beatles sessions) before climbing steadily toward driven focus (2018) and balanced equilibrium (2024).';
+  const minPoint = points.length > 0 ? points.reduce((prev, curr) => (curr.movingAvg < prev.movingAvg ? curr : prev), points[0]) : null;
+  const maxPoint = points.length > 0 ? points.reduce((prev, curr) => (curr.movingAvg > prev.movingAvg ? curr : prev), points[0]) : null;
+
+  const insight = minPoint && maxPoint
+    ? `Your emotional moving average score ranged from a low of ${minPoint.movingAvg} on ${minPoint.date} to a peak of ${maxPoint.movingAvg} on ${maxPoint.date}.`
+    : 'Emotional timeline score computed dynamically across your receipt history.';
 
   return { points, insight };
 }
@@ -209,9 +231,19 @@ export function computeSpendingOverTime(receipts: NormalizedReceipt[]): {
       categories: data.cats,
     }));
 
-  const maxYear = points.reduce((prev, curr) => (curr.totalSpent > prev.totalSpent ? curr : prev), points[0] || { period: '2017', totalSpent: 653074, categories: {} });
+  const maxYear = points.length > 0 ? points.reduce((prev, curr) => (curr.totalSpent > prev.totalSpent ? curr : prev), points[0]) : null;
 
-  const insight = `Peak expenditure occurred in ${maxYear.period} (₹${maxYear.totalSpent.toLocaleString()}) driven by family healthcare, public provident fund, and edtech self-development.`;
+  let topCatText = 'primary categories';
+  if (maxYear && maxYear.categories) {
+    const topCatPair = Object.entries(maxYear.categories).sort((a, b) => b[1] - a[1])[0];
+    if (topCatPair) {
+      topCatText = `${topCatPair[0]} (₹${Math.round(topCatPair[1]).toLocaleString()})`;
+    }
+  }
+
+  const insight = maxYear
+    ? `Peak expenditure occurred in ${maxYear.period} (₹${maxYear.totalSpent.toLocaleString()}), led by ${topCatText}.`
+    : 'Expenditure over time computed dynamically from financial receipts.';
 
   return { points, insight };
 }
@@ -271,7 +303,10 @@ export function computeConstellation(receipts: NormalizedReceipt[]): {
     }
   }
 
-  const insight = 'The Beatles, Permanent Residence, and Local Kirana form the central gravitational anchor of your decade-long habit constellation.';
+  const top3Names = topItems.slice(0, 3).map((item) => item.name).join(', ');
+  const insight = top3Names
+    ? `${top3Names} form the primary gravitational anchors of your habit constellation.`
+    : 'Top artists, merchants, and places form the primary gravitational anchors of your habit constellation.';
 
   return { nodes, links: links.slice(0, 24), insight };
 }

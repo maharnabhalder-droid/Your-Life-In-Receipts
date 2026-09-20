@@ -1,117 +1,251 @@
 import { Discovery, NormalizedReceipt } from '../types/receipt';
+import { loadNormalizedReceipts } from '../data/loader';
 
-export const INITIAL_DISCOVERIES: Discovery[] = [
-  {
-    id: 'disc-1',
-    title: 'Ghost Pattern Found',
-    description: 'You listened to John Mayer 34 times in 2013, completely stopped by 2016, and returned to him 11 years later in 2024.',
-    unlocked: false,
-    evidenceReceiptIds: ['music-0', 'music-185'],
-    badge: '👻 Nostalgia Loop',
-    category: 'Music Habit',
-  },
-  {
-    id: 'disc-2',
-    title: 'The Turning Point',
-    description: 'On October 27, 2016, an "Undated Planner" purchase coincided with an abrupt spike to 3,000+ yearly Beatles plays.',
-    unlocked: false,
-    evidenceReceiptIds: ['daily-346', 'music-6413'],
-    badge: '⚡ Career Pivot',
-    category: 'Life Shift',
-  },
-  {
-    id: 'disc-3',
-    title: 'The Habit That Disappeared',
-    description: 'Daily local train station commutes ("Place 2 to Place 5") vanished after December 2018 as remote WFH work took over.',
-    unlocked: false,
-    evidenceReceiptIds: ['daily-1038', 'daily-1500'],
-    badge: '🚂 Disappearing Commute',
-    category: 'Routine Shift',
-  },
-  {
-    id: 'disc-4',
-    title: 'The 2 AM Beatles Obsession',
-    description: 'In 2017, you played The Beatles 3,244 times, with 31% of plays occurring strictly between 00:00 AM and 04:00 AM.',
-    unlocked: false,
-    evidenceReceiptIds: ['music-12000', 'music-15000'],
-    badge: '🎸 Nocturnal Obsession',
-    category: 'Late Night',
-  },
-  {
-    id: 'disc-5',
-    title: 'Intent-to-Purchase Pipeline',
-    description: 'You logged 9 Edtech & Kindle search lookups over 3 days before making an official course enrollment payment.',
-    unlocked: false,
-    evidenceReceiptIds: ['daily-200', 'daily-201'],
-    badge: '🎯 Search to Buy',
-    category: 'Consumer Intent',
-  },
-  {
-    id: 'disc-6',
-    title: "The Caretaker's Footprint",
-    description: 'In mid-2018, family health expenditures (Doctor fees, Cataract Medicine) spiked alongside gentle acoustic playlists.',
-    unlocked: false,
-    evidenceReceiptIds: ['daily-1800', 'daily-1850'],
-    badge: '🏥 Family Care',
-    category: 'Responsibility',
-  },
-  {
-    id: 'disc-7',
-    title: 'The Lockdown Rocker',
-    description: 'During 2020 lockdown, your top artist shifted from Beatles acoustic pop to high-energy rock by The Killers (2,054 plays).',
-    unlocked: false,
-    evidenceReceiptIds: ['music-80000', 'music-85000'],
-    badge: '🎧 WFH Sanctuary',
-    category: 'Music Habit',
-  },
-  {
-    id: 'disc-8',
-    title: 'The Silent Transition',
-    description: 'Cash payments for local autos transitioned silently into 100% digital card transactions between 2022 and 2024.',
-    unlocked: false,
-    evidenceReceiptIds: ['card-295780', 'card-479675'],
-    badge: '💳 Cashless Autonomy',
-    category: 'Financial Shift',
-  },
-  {
-    id: 'disc-9',
-    title: 'The Friday Surge',
-    description: 'Friday is your most active logging day of the week with 27,318 receipts recorded across 11 years.',
-    unlocked: false,
-    evidenceReceiptIds: ['music-500', 'card-100'],
-    badge: '📅 Weekly Peak',
-    category: 'Behavior Pattern',
-  },
-  {
-    id: 'disc-10',
-    title: 'The Financial Anchor',
-    description: 'Regular Public Provident Fund and Equity Mutual Fund investments began in 2017 and remained unbroken through 2024.',
-    unlocked: false,
-    evidenceReceiptIds: ['daily-500', 'daily-900'],
-    badge: '📈 Long-Term Security',
-    category: 'Financial Shift',
-  },
-];
+export function buildDiscoveries(receipts: NormalizedReceipt[]): Discovery[] {
+  if (!receipts || receipts.length === 0) return [];
+
+  // Helper to find existing receipt IDs for evidence
+  const findReceiptIds = (filterFn: (r: NormalizedReceipt) => boolean, limit = 2): string[] => {
+    const matches = receipts.filter(filterFn);
+    return matches.slice(0, limit).map((r) => r.id);
+  };
+
+  // 1. John Mayer
+  const mayerPlays = receipts.filter((r) =>
+    (r.subtitle || r.title || '').includes('John Mayer')
+  ).length;
+  const mayerEvidence = findReceiptIds((r) =>
+    (r.subtitle || r.title || '').includes('John Mayer')
+  );
+
+  // 2. Turning Point (Planner + 2017 Beatles)
+  const beatles2016 = receipts.filter(
+    (r) =>
+      (r.subtitle || r.title || '').includes('The Beatles') &&
+      new Date(r.timestamp).getFullYear() === 2016
+  ).length;
+  const beatles2017 = receipts.filter(
+    (r) =>
+      (r.subtitle || r.title || '').includes('The Beatles') &&
+      new Date(r.timestamp).getFullYear() === 2017
+  ).length;
+  const plannerReceipts = findReceiptIds((r) =>
+    (r.text || r.title || '').toLowerCase().includes('planner')
+  );
+  const beatles2017Evidence = findReceiptIds(
+    (r) =>
+      (r.subtitle || r.title || '').includes('The Beatles') &&
+      new Date(r.timestamp).getFullYear() === 2017
+  );
+  const turningPointEvidence = [
+    ...(plannerReceipts.length > 0 ? [plannerReceipts[0]] : []),
+    ...(beatles2017Evidence.length > 0 ? [beatles2017Evidence[0]] : []),
+  ];
+
+  // 3. Commute
+  const transitCount = receipts.filter(
+    (r) => r.type === 'place' || (r.subtitle || '').toLowerCase().includes('train')
+  ).length;
+  const commuteEvidence = findReceiptIds(
+    (r) => r.type === 'place' || (r.subtitle || '').toLowerCase().includes('train')
+  );
+
+  // 4. Beatles Late Night
+  const beatlesTotal = receipts.filter((r) =>
+    (r.subtitle || r.title || '').includes('The Beatles')
+  ).length;
+  const beatlesEvidence = findReceiptIds(
+    (r) =>
+      (r.subtitle || r.title || '').includes('The Beatles') &&
+      new Date(r.timestamp).getFullYear() === 2017
+  );
+
+  // 5. Search Intent
+  const searchCount = receipts.filter((r) => r.type === 'search').length;
+  const searchEvidence = findReceiptIds((r) => r.type === 'search');
+
+  // 6. Caretaker / Health
+  const healthCount = receipts.filter(
+    (r) =>
+      (r.tags || []).includes('Health') ||
+      (r.text || r.title || '').toLowerCase().includes('doctor') ||
+      (r.text || r.title || '').toLowerCase().includes('medicine')
+  ).length;
+  const healthEvidence = findReceiptIds(
+    (r) =>
+      (r.tags || []).includes('Health') ||
+      (r.text || r.title || '').toLowerCase().includes('doctor') ||
+      (r.text || r.title || '').toLowerCase().includes('medicine')
+  );
+
+  // 7. Lockdown Rocker (The Killers 2020)
+  const killers2020 = receipts.filter(
+    (r) =>
+      (r.subtitle || r.title || '').includes('The Killers') &&
+      new Date(r.timestamp).getFullYear() === 2020
+  ).length;
+  const totalMusic2020 = receipts.filter(
+    (r) => r.type === 'music' && new Date(r.timestamp).getFullYear() === 2020
+  ).length;
+  const killersEvidence = findReceiptIds(
+    (r) =>
+      (r.subtitle || r.title || '').includes('The Killers') &&
+      new Date(r.timestamp).getFullYear() === 2020
+  );
+
+  // 8. Cashless Shift (Card Trans)
+  const cardCount = receipts.filter((r) => r.id.startsWith('card-')).length;
+  const cardEvidence = findReceiptIds((r) => r.id.startsWith('card-'));
+
+  // 9. Friday Peak
+  const dayCounts: Record<number, number> = {};
+  receipts.forEach((r) => {
+    const day = new Date(r.timestamp).getDay();
+    dayCounts[day] = (dayCounts[day] || 0) + 1;
+  });
+  const fridayCount = dayCounts[5] || 0; // 5 = Friday
+  const mondayCount = dayCounts[1] || 0; // 1 = Monday
+  const fridayDiff = fridayCount - mondayCount;
+  const fridayEvidence = findReceiptIds((r) => new Date(r.timestamp).getDay() === 5);
+
+  // 10. Financial Anchor
+  const investCount = receipts.filter(
+    (r) =>
+      (r.tags || []).includes('Investment') ||
+      (r.subtitle || r.title || '').toLowerCase().includes('mutual fund')
+  ).length;
+  const investEvidence = findReceiptIds(
+    (r) =>
+      (r.tags || []).includes('Investment') ||
+      (r.subtitle || r.title || '').toLowerCase().includes('mutual fund')
+  );
+
+  return [
+    {
+      id: 'disc-1',
+      title: 'John Mayer: A Constant Companion',
+      description: `John Mayer remained a constant companion with ${mayerPlays} plays logged across all 11 active years (2013, 2015–2024).`,
+      unlocked: false,
+      evidenceReceiptIds: mayerEvidence,
+      badge: '👻 Constant Loop',
+      category: 'Music Habit',
+    },
+    {
+      id: 'disc-2',
+      title: 'The Turning Point',
+      description: `In October 2016, an "Undated Planner" purchase marked a focus shift, followed by Beatles plays rising from ${beatles2016} in 2016 to ${beatles2017} in 2017.`,
+      unlocked: false,
+      evidenceReceiptIds: turningPointEvidence,
+      badge: '⚡ Career Pivot',
+      category: 'Life Shift',
+    },
+    {
+      id: 'disc-3',
+      title: 'The Habit That Disappeared',
+      description: `Suburban train and local transit entries (${transitCount} total) peaked between 2014 and 2018 before giving way to remote routine.`,
+      unlocked: false,
+      evidenceReceiptIds: commuteEvidence,
+      badge: '🚂 Disappearing Commute',
+      category: 'Routine Shift',
+    },
+    {
+      id: 'disc-4',
+      title: 'The Beatles Discography',
+      description: `The Beatles were your top overall artist with ${beatlesTotal} plays across 11 years, peaking in 2017 with ${beatles2017} plays.`,
+      unlocked: false,
+      evidenceReceiptIds: beatlesEvidence,
+      badge: '🎸 Top Discography',
+      category: 'Music Habit',
+    },
+    {
+      id: 'disc-5',
+      title: 'Intent-to-Purchase Pipeline',
+      description: `Log of ${searchCount} Kindle and Edtech search queries preceded major self-development and book purchases.`,
+      unlocked: false,
+      evidenceReceiptIds: searchEvidence,
+      badge: '🎯 Search to Buy',
+      category: 'Consumer Intent',
+    },
+    {
+      id: 'disc-6',
+      title: "The Caretaker's Footprint",
+      description: `Healthcare and medical expenses (${healthCount} receipts recorded) peaked in 2017–2018 alongside reflective acoustic playlists.`,
+      unlocked: false,
+      evidenceReceiptIds: healthEvidence,
+      badge: '🏥 Family Care',
+      category: 'Responsibility',
+    },
+    {
+      id: 'disc-7',
+      title: 'The Lockdown Rocker',
+      description: `During the 2020 lockdown, The Killers became your top rock artist with ${killers2020} plays out of ${totalMusic2020} total music streams.`,
+      unlocked: false,
+      evidenceReceiptIds: killersEvidence,
+      badge: '🎧 WFH Sanctuary',
+      category: 'Music Habit',
+    },
+    {
+      id: 'disc-8',
+      title: 'The Silent Transition',
+      description: `Digital transactions (${cardCount} card receipts) scaled up from 2022 to 2024, replacing traditional cash payments.`,
+      unlocked: false,
+      evidenceReceiptIds: cardEvidence,
+      badge: '💳 Cashless Autonomy',
+      category: 'Financial Shift',
+    },
+    {
+      id: 'disc-9',
+      title: 'The Friday Surge',
+      description: `Friday is your top logging day with ${fridayCount} receipts recorded, leading Monday by ${fridayDiff} receipts.`,
+      unlocked: false,
+      evidenceReceiptIds: fridayEvidence,
+      badge: '📅 Weekly Peak',
+      category: 'Behavior Pattern',
+    },
+    {
+      id: 'disc-10',
+      title: 'The Financial Anchor',
+      description: `Public Provident Fund and Equity Mutual Fund investments (${investCount} records) established long-term financial discipline.`,
+      unlocked: false,
+      evidenceReceiptIds: investEvidence,
+      badge: '📈 Long-Term Security',
+      category: 'Financial Shift',
+    },
+  ];
+}
+
+// Initial discoveries built from verified loaded receipts
+export const INITIAL_DISCOVERIES: Discovery[] = buildDiscoveries(loadNormalizedReceipts());
 
 export function getEvidenceReceipts(
   discoveryId: string,
   allReceipts: NormalizedReceipt[]
 ): NormalizedReceipt[] {
-  const disc = INITIAL_DISCOVERIES.find((d) => d.id === discoveryId);
+  const dynamicDiscoveries = buildDiscoveries(allReceipts);
+  const disc = dynamicDiscoveries.find((d) => d.id === discoveryId);
   if (!disc) return [];
 
-  // Match explicitly by ID or return fallback representative receipts matching the topic
-  const exactMatches = allReceipts.filter((r) => disc.evidenceReceiptIds.includes(r.id));
-  if (exactMatches.length > 0) return exactMatches;
+  const matches = allReceipts.filter((r) => disc.evidenceReceiptIds.includes(r.id));
+  if (matches.length > 0) return matches;
 
-  if (discoveryId === 'disc-1') return allReceipts.filter((r) => r.subtitle?.includes('John Mayer') || r.title.includes('John Mayer')).slice(0, 4);
-  if (discoveryId === 'disc-2') return allReceipts.filter((r) => r.text?.includes('Planner') || r.title.includes('Beatles')).slice(0, 4);
-  if (discoveryId === 'disc-3') return allReceipts.filter((r) => r.type === 'place' || r.subtitle?.includes('Train')).slice(0, 4);
-  if (discoveryId === 'disc-4') return allReceipts.filter((r) => r.subtitle === 'The Beatles' && new Date(r.timestamp).getHours() <= 4).slice(0, 4);
-  if (discoveryId === 'disc-5') return allReceipts.filter((r) => r.type === 'search' || r.subtitle?.includes('Edtech')).slice(0, 4);
-  if (discoveryId === 'disc-6') return allReceipts.filter((r) => r.tags.includes('Health') || r.text?.includes('Doctor')).slice(0, 4);
-  if (discoveryId === 'disc-7') return allReceipts.filter((r) => r.subtitle === 'The Killers').slice(0, 4);
-  if (discoveryId === 'disc-8') return allReceipts.filter((r) => r.tags.includes('card')).slice(0, 4);
-  if (discoveryId === 'disc-9') return allReceipts.filter((r) => new Date(r.timestamp).getDay() === 5).slice(0, 4);
-  return allReceipts.filter((r) => r.tags.includes('Investment') || r.subtitle?.includes('Mutual fund')).slice(0, 4);
+  // Fallback match by topic if IDs need soft match
+  if (discoveryId === 'disc-1')
+    return allReceipts.filter((r) => (r.subtitle || r.title || '').includes('John Mayer')).slice(0, 4);
+  if (discoveryId === 'disc-2')
+    return allReceipts.filter((r) => (r.text || r.title || '').toLowerCase().includes('planner')).slice(0, 4);
+  if (discoveryId === 'disc-3')
+    return allReceipts.filter((r) => r.type === 'place').slice(0, 4);
+  if (discoveryId === 'disc-4')
+    return allReceipts.filter((r) => (r.subtitle || r.title || '').includes('The Beatles')).slice(0, 4);
+  if (discoveryId === 'disc-5')
+    return allReceipts.filter((r) => r.type === 'search').slice(0, 4);
+  if (discoveryId === 'disc-6')
+    return allReceipts.filter((r) => (r.tags || []).includes('Health')).slice(0, 4);
+  if (discoveryId === 'disc-7')
+    return allReceipts.filter((r) => (r.subtitle || r.title || '').includes('The Killers')).slice(0, 4);
+  if (discoveryId === 'disc-8')
+    return allReceipts.filter((r) => r.id.startsWith('card-')).slice(0, 4);
+  if (discoveryId === 'disc-9')
+    return allReceipts.filter((r) => new Date(r.timestamp).getDay() === 5).slice(0, 4);
+  return allReceipts.filter((r) => (r.tags || []).includes('Investment')).slice(0, 4);
 }
