@@ -23,14 +23,15 @@ export const RollView: React.FC = () => {
 
   const chapters = computed?.chapters || [];
 
-  // Stable virtual items list
+  // Stable virtual items list with O(1) Set lookup
   const virtualItemsList = useMemo(() => {
     const list: Array<{ type: 'chapter' | 'receipt'; data: any }> = [];
     const chapterReceiptSet = new Set<string>();
 
     chapters.forEach((ch) => {
       list.push({ type: 'chapter', data: ch });
-      const chReceipts = filteredReceipts.filter((r) => ch.receiptIds.includes(r.id));
+      const chIdSet = new Set(ch.receiptIds);
+      const chReceipts = filteredReceipts.filter((r) => chIdSet.has(r.id));
       chReceipts.forEach((r) => {
         chapterReceiptSet.add(r.id);
         list.push({ type: 'receipt', data: r });
@@ -141,13 +142,25 @@ export const RollView: React.FC = () => {
                     onClick={() => {
                       if (item.type === 'receipt') {
                         selectReceipt(item.data.id);
-                        const matchedMoment = computed?.moments.find(m => m.receiptIds.includes(item.data.id)) || {
+                        const relevantConns = computed?.connections.filter(
+                          (c) => c.sourceId === item.data.id || c.targetId === item.data.id
+                        ) || [];
+                        const avgStrength = relevantConns.length > 0
+                          ? Number((relevantConns.reduce((sum, c) => sum + c.score, 0) / relevantConns.length).toFixed(2))
+                          : 0.65;
+
+                        const matchedMoment = computed?.moments.find((m) => m.receiptIds.includes(item.data.id)) || {
                           id: `context-${item.data.id}`,
                           title: `Thread for ${item.data.title}`,
-                          description: `Direct affinity links and sequence context for receipt #${item.data.id.slice(-6)}.`,
-                          receiptIds: [item.data.id],
-                          connectionStrength: 0.88,
-                          patternType: 'Individual Receipt Thread'
+                          description: relevantConns.length > 0
+                            ? `Temporal and semantic affinity link connecting ${relevantConns.length} proximate receipts.`
+                            : `Telemetry entry #${item.data.id.slice(-6)} sequence node.`,
+                          receiptIds: [
+                            item.data.id,
+                            ...relevantConns.slice(0, 3).map((c) => (c.sourceId === item.data.id ? c.targetId : c.sourceId)),
+                          ],
+                          connectionStrength: avgStrength,
+                          patternType: relevantConns.length > 0 ? 'Dynamic Affinity Cluster' : 'Individual Moment Thread',
                         };
                         openMomentDrawer(matchedMoment);
                       }

@@ -13,12 +13,12 @@ interface ReceiptBaseProps {
 }
 
 const moodColors: Record<Mood, string> = {
-  melancholic: 'bg-indigo-900/30 text-indigo-300 border-indigo-700/50',
-  introspective: 'bg-purple-900/30 text-purple-300 border-purple-700/50',
-  driven: 'bg-amber-900/30 text-amber-300 border-amber-700/50',
-  restless: 'bg-red-900/30 text-red-300 border-red-700/50',
-  focused: 'bg-blue-900/30 text-blue-300 border-blue-700/50',
-  balanced: 'bg-emerald-900/30 text-emerald-300 border-emerald-700/50',
+  melancholic: 'bg-indigo-100 text-indigo-950 border-indigo-300 dark:bg-indigo-900/40 dark:text-indigo-300 dark:border-indigo-700/50',
+  introspective: 'bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-700/50',
+  driven: 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700/50',
+  restless: 'bg-red-100 text-red-950 border-red-300 dark:bg-red-900/40 dark:text-red-300 dark:border-red-700/50',
+  focused: 'bg-blue-100 text-blue-950 border-blue-300 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-700/50',
+  balanced: 'bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700/50',
 };
 
 export const ReceiptBase: React.FC<ReceiptBaseProps> = ({

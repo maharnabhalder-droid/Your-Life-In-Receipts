@@ -51,6 +51,8 @@ export const FinaleView: React.FC = () => {
     }
   };
 
+  const closingNarrative = `You logged ${totalReceipts.toLocaleString()} personal telemetry records across 11.5 years with ₹${Math.round(totalSpent).toLocaleString()} in tracked financial stewardship. Anchored by ${topArtist} and ${topMerchant}, with a ${nocturnalPct}% nocturnal rhythm, your thermal roll reflects a resilient evolution from commuter routines to digital autonomy.`;
+
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 font-mono space-y-8 text-center">
       {/* Header */}
@@ -147,7 +149,7 @@ export const FinaleView: React.FC = () => {
               <Sparkles className="w-4 h-4" /> CLOSING MASTER INSIGHT
             </div>
             <p className="font-serif italic text-sm text-[var(--ink-primary)] leading-relaxed">
-              "You did not just live a decade; you authored a continuous, resilient quiet masterpiece. From student train commutes and Beatles streams to family care and digital autonomy—every receipt was proof of your growth."
+              "{closingNarrative}"
             </p>
           </div>
 

@@ -13,7 +13,7 @@
 ### 📖 Central Story: *"The Nocturnal Searcher"*
 The dataset tells the verified coming-of-age story of a young engineer in India:
 1. **The Commuter's Acoustic Prelude (2013–2015)**: Local train commutes, acoustic jams, idli-vada breakfasts, and modest student budgets (157 streams in 2015).
-2. **The 2 AM Beatles & Shift Era (2016–2017)**: 215 Beatles plays in 2017 (out of 938 lifetime plays), undated planner purchases, late-night exam prep, doctor visits, and peak expenditure of ₹2,975,287.
+2. **The 2 AM Beatles & Shift Era (2016–2017)**: 215 Beatles plays in 2017 (out of 948 lifetime plays), undated planner purchases, late-night exam prep, doctor visits, and peak expenditure of ₹2,974,810.
 3. **Deep Focus & Family Anchors (2018–2019)**: HBR & Edtech subscriptions, family healthcare coverage, mutual fund SIP investments.
 4. **The Sanctuary & Lockdown Beats (2020–2021)**: 1,179 music streams in 2020 led by 122 plays of The Killers, WFH focus, and digital sanctuary.
 5. **Digital Autonomy & Modern Tempo (2022–2024)**: Seamless card transactions, balanced multi-genre listening (John Mayer 307 plays across all 11 years), and confident adult equilibrium.
@@ -24,8 +24,8 @@ The dataset tells the verified coming-of-age story of a young engineer in India:
 
 | View Mode | Dark Theme ("Night Shift") | Light Theme ("Day Desk") |
 | :--- | :--- | :--- |
-| **Desktop View** | `🧾 The Thermal Paper Roll (Dark)` <br> *Near-black warm desk, glowing thermal accents, monospaced receipt ink.* | `🧾 The Thermal Paper Roll (Light)` <br> *Warm cream desk, bright thermal paper, faded blue-black ink.* |
-| **Mobile View** | `📱 Mobile Thermal Stream (Dark)` <br> *Single-column roll, horizontal touch filters, bottom sheet drawer.* | `📱 Mobile Thermal Stream (Light)` <br> *Responsive touch targets, scaling SVG charts, clean vertical scroll.* |
+| **Desktop View** | 🖥️ **The Thermal Paper Roll (Dark)**<br> *Near-black warm desk, glowing thermal accents, monospaced receipt ink.* | ☀️ **The Thermal Paper Roll (Light)**<br> *Warm cream desk, bright thermal paper, faded blue-black ink.* |
+| **Mobile View** | 📱 **Mobile Thermal Stream (Dark)**<br> *Single-column roll, horizontal touch filters, bottom sheet drawer.* | 📱 **Mobile Thermal Stream (Light)**<br> *Responsive touch targets, scaling SVG charts, clean vertical scroll.* |
 
 ---
 

@@ -48,6 +48,8 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
               <button
                 key={item.id}
                 onClick={() => setRoute(item.id)}
+                aria-label={item.label}
+                title={item.label}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono font-medium transition-colors shrink-0 min-h-[44px] min-w-[44px] justify-center ${
                   isActive
                     ? 'bg-amber-500 text-black font-bold shadow'
@@ -79,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
               setRoute('/roll');
               surpriseMe();
             }}
-            aria-label="Jump to a surprise connected moment"
+            aria-label="Surprise me with a connected moment"
             className="flex items-center gap-1 px-2.5 py-2 rounded-md bg-gradient-to-r from-amber-500 to-purple-600 text-black font-mono text-xs font-bold shadow hover:brightness-110 transition-all min-h-[44px] min-w-[44px] justify-center"
             title="Jump to a Surprise Connected Moment"
           >
@@ -89,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setRoute, onOpenCo
 
           <button
             onClick={toggleTheme}
-            aria-label="Toggle between dark and light themes"
+            aria-label="Toggle dark and light themes"
             className="p-2 rounded-md bg-[var(--bg-desk-secondary)] text-[var(--text-main)] border border-neutral-700 hover:border-amber-500 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             title={`Switch to ${theme === 'dark' ? 'Day Desk (Light)' : 'Night Shift (Dark)'} Theme`}
           >

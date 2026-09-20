@@ -14,9 +14,23 @@ interface CommandPaletteProps {
 export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, setRoute }) => {
   const { theme, toggleTheme } = useTheme();
   const receipts = useReceiptStore((state) => state.receipts);
+  const searchQuery = useReceiptStore((state) => state.searchQuery);
   const setSearchQuery = useReceiptStore((state) => state.setSearchQuery);
   const toggleTypeFilter = useReceiptStore((state) => state.toggleTypeFilter);
   const selectReceipt = useReceiptStore((state) => state.selectReceipt);
+
+  const queryClean = (searchQuery || '').trim().toLowerCase();
+  const matchingReceipts = receipts
+    .filter((r) => {
+      if (!queryClean) return true;
+      return (
+        r.title.toLowerCase().includes(queryClean) ||
+        (r.subtitle || '').toLowerCase().includes(queryClean) ||
+        (r.text || '').toLowerCase().includes(queryClean) ||
+        r.tags.some((t) => t.toLowerCase().includes(queryClean))
+      );
+    })
+    .slice(0, 8);
 
   if (!isOpen) return null;
 
@@ -98,7 +112,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
             </Command.Group>
 
             <Command.Group heading="RECENT MATCHING RECEIPTS" className="text-[10px] text-neutral-500 font-bold px-2 py-1">
-              {receipts.slice(0, 5).map((r) => (
+              {matchingReceipts.map((r) => (
                 <Command.Item
                   key={r.id}
                   onSelect={() => {

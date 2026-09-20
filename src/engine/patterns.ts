@@ -184,11 +184,14 @@ export function computeMoodTimeline(receipts: NormalizedReceipt[]): {
 
   const sampled = receipts.filter((_, idx) => idx % Math.max(1, Math.floor(receipts.length / 80)) === 0);
 
-  let runningSum = 0;
+  const windowSize = 8;
   const points: MoodPoint[] = sampled.map((r, i) => {
     const val = moodScoreMap[r.mood || 'focused'] || 3.5;
-    runningSum += val;
-    const movingAvg = Number((runningSum / (i + 1)).toFixed(2));
+    const startIdx = Math.max(0, i - windowSize + 1);
+    const windowSlice = sampled.slice(startIdx, i + 1);
+    const movingAvg = Number(
+      (windowSlice.reduce((sum, curr) => sum + (moodScoreMap[curr.mood || 'focused'] || 3.5), 0) / windowSlice.length).toFixed(2)
+    );
     return {
       date: new Date(r.timestamp).toISOString().split('T')[0],
       mood: r.mood || 'focused',
