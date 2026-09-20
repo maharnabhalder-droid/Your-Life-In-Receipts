@@ -2,7 +2,7 @@
 
 > **Hackathon Submission**: "Your Life, In Receipts" — 6-Hour Creative Challenge  
 > **Concept**: A living thermal-paper printout of a life. Raw Data → Insights → Connections → Story.  
-> 🌐 **Live Deployment**: [https://your-life-in-receipts-pi.vercel.app/](https://your-life-in-receipts-pi.vercel.app/)
+> 🌐 **Live Deployment**: [https://your-life-in-receipts-6qws7oz9l-university-of-kalyani.vercel.app/](https://your-life-in-receipts-6qws7oz9l-university-of-kalyani.vercel.app/)
 
 ---
 
