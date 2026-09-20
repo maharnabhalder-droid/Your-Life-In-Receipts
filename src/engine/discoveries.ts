@@ -1,5 +1,4 @@
 import { Discovery, NormalizedReceipt } from '../types/receipt';
-import { loadNormalizedReceipts } from '../data/loader';
 
 export function buildDiscoveries(receipts: NormalizedReceipt[]): Discovery[] {
   if (!receipts || receipts.length === 0) return [];
@@ -214,8 +213,19 @@ export function buildDiscoveries(receipts: NormalizedReceipt[]): Discovery[] {
   ];
 }
 
-// Initial discoveries built from verified loaded receipts
-export const INITIAL_DISCOVERIES: Discovery[] = buildDiscoveries(loadNormalizedReceipts());
+// Initial fallback discoveries template
+export const INITIAL_DISCOVERIES: Discovery[] = [
+  { id: 'disc-1', title: 'The Beatles Habit', description: 'Beatles plays across all 11 years.', unlocked: false, evidenceReceiptIds: [], badge: '🎸 11-Year Anchor', category: 'Music Obsession' },
+  { id: 'disc-2', title: 'John Mayer: Constant Companion', description: 'John Mayer plays across 11 active years.', unlocked: false, evidenceReceiptIds: [], badge: '🎸 Constant Artist', category: 'Music Obsession' },
+  { id: 'disc-3', title: 'The 2020 Killers Resurgence', description: 'Killers plays during 2020.', unlocked: false, evidenceReceiptIds: [], badge: '⚡ Sudden Spike', category: 'Music Obsession' },
+  { id: 'disc-4', title: 'The Nocturnal Ratio', description: '16.9% of receipts between midnight and 4AM.', unlocked: false, evidenceReceiptIds: [], badge: '🌙 Night Owl', category: 'Circadian Habit' },
+  { id: 'disc-5', title: '2017 Expenditure Peak', description: 'Peak annual spending in 2017.', unlocked: false, evidenceReceiptIds: [], badge: '💳 Financial Peak', category: 'Financial Shift' },
+  { id: 'disc-6', title: 'Commuter Beats & Transit', description: 'Train transport and music streaming overlap.', unlocked: false, evidenceReceiptIds: [], badge: '🚆 Daily Transit', category: 'Daily Routine' },
+  { id: 'disc-7', title: 'Search Intent to Action', description: 'Technical courses and book purchases.', unlocked: false, evidenceReceiptIds: [], badge: '🔍 Deep Learner', category: 'Behavior Pattern' },
+  { id: 'disc-8', title: 'Festival & Family Traditions', description: 'Festival celebrations and family sweets.', unlocked: false, evidenceReceiptIds: [], badge: '🪔 Cultural Anchor', category: 'Life Event' },
+  { id: 'disc-9', title: 'Friday Rhythm', description: 'Top day of the week for receipts.', unlocked: false, evidenceReceiptIds: [], badge: '📅 Weekly Peak', category: 'Behavior Pattern' },
+  { id: 'disc-10', title: 'The Financial Anchor', description: 'Long-term financial discipline.', unlocked: false, evidenceReceiptIds: [], badge: '📈 Long-Term Security', category: 'Financial Shift' },
+];
 
 export function getEvidenceReceipts(
   discoveryId: string,

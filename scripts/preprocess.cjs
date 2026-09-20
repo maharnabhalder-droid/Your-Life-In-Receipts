@@ -3,9 +3,13 @@ const path = require('path');
 
 const dataDir = path.join(__dirname, '../data');
 const outputDir = path.join(__dirname, '../src/data');
+const publicOutputDir = path.join(__dirname, '../public/data');
 
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
+}
+if (!fs.existsSync(publicOutputDir)) {
+  fs.mkdirSync(publicOutputDir, { recursive: true });
 }
 
 console.log('Preprocessing dataset from /data...');
@@ -202,4 +206,5 @@ normalized.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
 console.log(`Successfully normalized ${normalized.length} total receipt records!`);
 
 fs.writeFileSync(path.join(outputDir, 'normalized_dataset.json'), JSON.stringify(normalized, null, 2));
-console.log('Saved src/data/normalized_dataset.json');
+fs.writeFileSync(path.join(publicOutputDir, 'normalized_dataset.json'), JSON.stringify(normalized, null, 2));
+console.log('Saved src/data/normalized_dataset.json & public/data/normalized_dataset.json');

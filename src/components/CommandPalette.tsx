@@ -18,18 +18,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
   const toggleTypeFilter = useReceiptStore((state) => state.toggleTypeFilter);
   const selectReceipt = useReceiptStore((state) => state.selectReceipt);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        if (isOpen) onClose();
-        else onClose(); // parent handles toggle
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
   return (

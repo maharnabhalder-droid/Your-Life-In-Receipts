@@ -98,6 +98,7 @@ export const FilterBar: React.FC = () => {
             <input
               type="date"
               value={dateRange[0]}
+              aria-label="Start date filter"
               onChange={(e) => setDateRange([e.target.value, dateRange[1]])}
               className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] shrink-0"
             />
@@ -105,6 +106,7 @@ export const FilterBar: React.FC = () => {
             <input
               type="date"
               value={dateRange[1]}
+              aria-label="End date filter"
               onChange={(e) => setDateRange([dateRange[0], e.target.value])}
               className="bg-transparent text-[10px] sm:text-[11px] text-[var(--text-main)] focus:outline-none cursor-pointer min-w-[85px] shrink-0"
             />

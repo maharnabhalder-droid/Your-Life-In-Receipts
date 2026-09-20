@@ -95,7 +95,7 @@ export const useReceiptStore = create<ReceiptState>()(
       unlockedDiscoveryIds: ['disc-1', 'disc-2'], // Initial unlocked starters
 
       init: async () => {
-        const data = loadNormalizedReceipts();
+        const data = await loadNormalizedReceipts();
         const filtered = computeFilteredReceipts(
           data,
           get().searchQuery,

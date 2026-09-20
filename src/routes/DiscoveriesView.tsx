@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Compass, Lock, Unlock, CheckCircle2, Eye, Sparkles } from 'lucide-react';
 import { useReceiptStore } from '../store/useReceiptStore';
-import { getEvidenceReceipts, INITIAL_DISCOVERIES } from '../engine/discoveries';
+import { getEvidenceReceipts, INITIAL_DISCOVERIES, buildDiscoveries } from '../engine/discoveries';
 
 export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = ({ setRoute }) => {
   const receipts = useReceiptStore((state) => state.receipts);
@@ -12,17 +12,21 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
 
   const [activeEvidenceId, setActiveEvidenceId] = useState<string | null>(null);
 
-  const totalDiscoveries = INITIAL_DISCOVERIES.length;
+  const discoveries = useMemo(() => {
+    return receipts.length > 0 ? buildDiscoveries(receipts) : INITIAL_DISCOVERIES;
+  }, [receipts]);
+
+  const totalDiscoveries = discoveries.length;
   const unlockedCount = unlockedIds.length;
   const progressPct = Math.round((unlockedCount / totalDiscoveries) * 100);
 
-  const selectedDisc = INITIAL_DISCOVERIES.find((d) => d.id === activeEvidenceId);
+  const selectedDisc = discoveries.find((d) => d.id === activeEvidenceId);
   const evidenceReceipts = activeEvidenceId ? getEvidenceReceipts(activeEvidenceId, receipts) : [];
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8 font-mono space-y-8">
       {/* Header & Progress Bar */}
-      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-neutral-800 space-y-4 shadow-xl">
+      <div className="bg-[var(--bg-desk-secondary)] p-6 rounded-xl border border-[var(--border-receipt)] space-y-4 shadow-xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Compass className="w-6 h-6 text-amber-500" />
@@ -38,7 +42,7 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
 
           <div className="text-right">
             <span className="text-2xl font-black text-amber-400">{unlockedCount} / {totalDiscoveries}</span>
-            <span className="block text-[10px] text-neutral-400 uppercase tracking-wider">UNLOCKED INSIGHTS</span>
+            <span className="block text-[10px] text-[var(--text-muted)] uppercase tracking-wider">UNLOCKED INSIGHTS</span>
           </div>
         </div>
 
@@ -55,7 +59,7 @@ export const DiscoveriesView: React.FC<{ setRoute: (route: string) => void }> = 
 
       {/* Discovery Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {INITIAL_DISCOVERIES.map((disc) => {
+        {discoveries.map((disc) => {
           const isUnlocked = unlockedIds.includes(disc.id);
           const isSelected = activeEvidenceId === disc.id;
 
